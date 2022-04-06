@@ -35,6 +35,6 @@ CONTROL DE VERSIONES:
 
 DESPLIEGUE:
 Se creó una URL para compartir de GitHub Pages. y se Coloco la descripción dentro del repositorio incluyendo la URL.
-La dirección de despliegue es: 
+La dirección de despliegue es: https://jers3084.github.io/proyecto3/ 
 para ejecutar el programa solo pulse sobre la liga anterior y siga las instrucciones del programa.
 
