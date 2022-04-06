@@ -1,4 +1,4 @@
-# proyecto3
+# Proyecto 3
 
 Proyecto 3 del Curso Webfullstack Ucamp UTEL, Tablero de Datos ("Dashboard")
 
