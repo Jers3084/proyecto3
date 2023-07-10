@@ -1,59 +1,77 @@
-import { cargarPaisesenSelector, imprimirDatosPais } from './funciones.js' //Importa funciones
+import {
+  imprimirFecha,
+  cargarPaisesenSelector,
+  imprimirDatosPais,
+} from "./funciones.js"; //Importa funciones
 
-let myChart1 //inicializa variables
-let myChart2
-let myChart3
+let myChart1; //inicializa variables
+let myChart2;
+let myChart3;
 
-/*Imprime la fecha actual en la paguina
+//Imprime la fecha actual en la paguina
 window.onload = function () {
-  imprimirFecha()
-}*/
+  imprimirFecha();
+};
 
 //Carga la lista de paises existentes en la API de Covid-19 en las opciones del campo de entrada Select
-cargarPaisesenSelector()
+cargarPaisesenSelector();
 
 //Ejecuta la busqueda de datos y la impresion de Graficas cuando se selecciona un pais del campo de entrada Select
-const selectElement = document.querySelector('.selector')
-selectElement.addEventListener('change', (event) => {
-  document.getElementById('loader').style.visibility = 'visible'
-  var e = document.getElementById('campos')
-  var pais = e.value
-  imprimirGraficos(pais) //LLama funcion que consulta datos e imprime graficos
-})
+const selectElement = document.querySelector(".selector");
+selectElement.addEventListener("change", (event) => {
+  document.getElementById("loader").style.visibility = "visible";
+  var e = document.getElementById("campos");
+  var pais = e.value;
+  imprimirGraficos(pais); //LLama funcion que consulta datos e imprime graficos
+});
 
 //Funcion que consulta los datos de la API e Imprime los datos en Graficas utilizando Chartjs
 async function imprimirGraficos(paisBuscado) {
-  const cadenaDeBusqueda = 'https://covid-api.mmediagroup.fr/v1/history?'
-  const cadenaDeBusqueda1 =
-    cadenaDeBusqueda + 'country=' + paisBuscado + '&status=Confirmed'
+  const cadenaDeBusqueda = "https://corona.lmao.ninja/v2/countries/";
+  const cadenaDeBusqueda1 = cadenaDeBusqueda + paisBuscado;
   var response = await fetch(cadenaDeBusqueda1)
     .then((response) => response.json())
     .then((nombres) => {
-      const dataArray = [nombres.All.dates]
-      var nombrePais = nombres.All.country
-      var poblacion = nombres.All.population
-      var vida = nombres.All.life_expectancy
-      var localizacion = nombres.All.location
-      var capital = nombres.All.capital_city
-      imprimirDatosPais(nombrePais, poblacion, vida, localizacion, capital)
+      const dataArray = [nombres];
+      const dataArray1 = [
+        {
+          Casos: nombres.cases,
+        },
+      ];
+      var nombrePais = paisBuscado;
+      var identificador = nombres.countryInfo.iso3;
+      var poblacion = nombres.population;
+      var latitud = nombres.countryInfo.lat;
+      var longitud = nombres.countryInfo.long;
+      var continente = nombres.continent;
+      var bandera = nombres.countryInfo.flag;
+      imprimirDatosPais(
+        nombrePais,
+        identificador,
+        poblacion,
+        latitud,
+        longitud,
+        continente,
+        bandera
+      );
 
-      const ctx = document.getElementById('myChart1').getContext('2d')
+      const ctx = document.getElementById("myChart1").getContext("2d");
 
       if (myChart1) {
-        myChart1.destroy()
+        myChart1.destroy();
       }
 
       myChart1 = new Chart(ctx, {
-        type: 'line',
+        type: "bar",
         data: {
           labels: [],
           datasets: [
             {
-              label: '# de Confirmados de COVID-19 ' + paisBuscado,
-              data: dataArray[0],
+              label: "Datos de Casos de COVID-19 " + paisBuscado,
+              data: dataArray1[0],
               fill: false,
-              backgroundColor: 'rgba(75, 192, 192, 1)',
-              borderColor: 'rgb(75, 192, 192, 1)',
+              backgroundColor: "rgba(75, 192, 192, 1)",
+              borderColor: "rgb(75, 192, 192, 1)",
               borderWidth: 1,
             },
           ],
@@ -65,34 +83,37 @@ async function imprimirGraficos(paisBuscado) {
             },
           },
         },
-      })
+      });
     })
     .catch(function (error) {
-      console.log('Hubo un problema con la petición Fetch:' + error.message)
-    })
+      console.log("Hubo un problema con la petición Fetch:" + error.message);
+    });
 
-  const cadenaDeBusqueda2 =
-    cadenaDeBusqueda + 'country=' + paisBuscado + '&status=Deaths'
+  const cadenaDeBusqueda2 = cadenaDeBusqueda + paisBuscado;
   response = await fetch(cadenaDeBusqueda2)
     .then((response) => response.json())
     .then((nombres) => {
-      const dataArray = [nombres.All.dates]
-
-      const ctx = document.getElementById('myChart2').getContext('2d')
+      const dataArray = [nombres];
+      const dataArray2 = [
+        {
+          Recuperados: nombres.deaths,
+        },
+      ];
+      const ctx = document.getElementById("myChart2").getContext("2d");
       if (myChart2) {
-        myChart2.destroy()
+        myChart2.destroy();
       }
 
       myChart2 = new Chart(ctx, {
-        type: 'line',
+        type: "bar",
         data: {
           labels: [],
           datasets: [
             {
-              label: '# de Muertes de COVID-19 ' + paisBuscado,
-              data: dataArray[0],
-              backgroundColor: 'rgba(75, 192, 192, 1)',
-              borderColor: 'rgb(75, 192, 192, 1)',
+              label: "# de Muertes por COVID-19 " + paisBuscado,
+              data: dataArray2[0],
+              backgroundColor: "rgba(200,16,23, 1)",
+              borderColor: "rgb(75, 192, 192, 1)",
               borderWidth: 1,
             },
           ],
@@ -104,34 +125,37 @@ async function imprimirGraficos(paisBuscado) {
             },
           },
         },
-      })
+      });
     })
     .catch(function (error) {
-      console.log('Hubo un problema con la petición Fetch:' + error.message)
-    })
+      console.log("Hubo un problema con la petición Fetch:" + error.message);
+    });
 
-  const cadenaDeBusqueda3 =
-    cadenaDeBusqueda + 'country=' + paisBuscado + '&status=Recovered'
+  const cadenaDeBusqueda3 = cadenaDeBusqueda + paisBuscado;
   response = await fetch(cadenaDeBusqueda3)
     .then((response) => response.json())
     .then((nombres) => {
-      const dataArray = [nombres.All.dates]
-
-      const ctx = document.getElementById('myChart3').getContext('2d')
+      const dataArray = [nombres];
+      const dataArray3 = [
+        {
+          Activos: nombres.recovered,
+        },
+      ];
+      const ctx = document.getElementById("myChart3").getContext("2d");
       if (myChart3) {
-        myChart3.destroy()
+        myChart3.destroy();
       }
 
       myChart3 = new Chart(ctx, {
-        type: 'line',
+        type: "bar",
         data: {
           labels: [],
           datasets: [
             {
-              label: '# de Recuperados de COVID-19 ' + paisBuscado,
-              data: dataArray[0],
-              backgroundColor: 'rgba(75, 192, 192, 1)',
-              borderColor: 'rgb(75, 192, 192, 1)',
+              label: "# de Recuperados de COVID-19 " + paisBuscado,
+              data: dataArray3[0],
+              backgroundColor: "rgba(111,203,159, 1)",
+              borderColor: "rgb(75, 192, 192, 1)",
               borderWidth: 1,
             },
           ],
@@ -143,11 +167,11 @@ async function imprimirGraficos(paisBuscado) {
             },
           },
         },
-      })
+      });
 
-      document.getElementById('loader').style.visibility = 'hidden'
+      document.getElementById("loader").style.visibility = "hidden";
     })
     .catch(function (error) {
-      console.log('Hubo un problema con la petición Fetch:' + error.message)
-    })
+      console.log("Hubo un problema con la petición Fetch:" + error.message);
+    });
 }
